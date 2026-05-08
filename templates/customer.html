@@ -1,0 +1,121 @@
+{% extends 'app_layout.html' %}
+{% block title %}Customers - PharmaLink{% endblock %}
+
+{% block page_content %}
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Customer Management</h1>
+        <p class="text-slate-500 text-sm mt-1">Manage customer profiles and details.</p>
+    </div>
+    <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm shadow-blue-200 flex items-center gap-2">
+        <i class="fas fa-user-plus"></i> Add Customer
+    </button>
+</div>
+
+<!-- Customers Table -->
+<div class="glass-card overflow-hidden">
+    <div class="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <h2 class="font-bold text-slate-700">Customer Directory</h2>
+        <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="searchInput" placeholder="Search customers..." class="pl-9 pr-4 py-1.5 border border-slate-200 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 w-64 bg-white">
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse" id="customersTable">
+            <thead>
+                <tr class="bg-white border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                    <th class="p-4 font-semibold">Customer Details</th>
+                    <th class="p-4 font-semibold">Contact</th>
+                    <th class="p-4 font-semibold">Age</th>
+                    <th class="p-4 font-semibold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm bg-white">
+                {% for customer in customers %}
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 flex items-center justify-center font-bold">
+                                {{ customer.customer_name[0] }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800">{{ customer.customer_name }}</p>
+                                <p class="text-xs text-slate-500">ID: #{{ customer.customer_id }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-slate-600">
+                        <i class="fas fa-phone-alt text-slate-400 mr-2"></i>{{ customer.phone or 'N/A' }}
+                    </td>
+                    <td class="p-4">
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-slate-600 bg-slate-100 rounded-full">
+                            {{ customer.age or 'N/A' }} yrs
+                        </span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <div class="flex justify-end gap-2">
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-1"><i class="fas fa-eye"></i></button>
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-1"><i class="fas fa-edit"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="p-8 text-center text-slate-500">
+                        <i class="fas fa-users text-4xl text-slate-300 mb-3"></i>
+                        <p>No customers found.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div id="addModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+        <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+            <h2 class="text-xl font-bold text-slate-800">Add New Customer</h2>
+            <button onclick="document.getElementById('addModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <form action="{{ url_for('add_customer') }}" method="POST" id="addForm" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-slate-700">Full Name *</label>
+                    <input type="text" name="customer_name" required class="w-full border-slate-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-slate-700">Phone Number *</label>
+                    <input type="text" name="phone" required class="w-full border-slate-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-slate-700">Age</label>
+                    <input type="number" name="age" min="0" max="150" class="w-full border-slate-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border">
+                </div>
+            </form>
+        </div>
+        <div class="p-6 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
+            <button onclick="document.getElementById('addModal').classList.add('hidden')" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors font-medium">Cancel</button>
+            <button type="submit" form="addForm" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">Save Customer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#customersTable tbody tr');
+        rows.forEach(row => {
+            if(row.innerText.toLowerCase().includes(filter)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

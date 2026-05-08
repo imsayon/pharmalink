@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex h-screen overflow-hidden bg-slate-50">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 w-64 flex-shrink-0 z-50">
+        <div class="p-6 border-b border-slate-200 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-md">
+                <i class="fas fa-pills text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">PharmaLink</h2>
+                <p class="text-xs text-slate-500 font-medium tracking-wide uppercase">Admin Panel</p>
+            </div>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1">
+                <li>
+                    <a href="{{ url_for('dashboard') }}" class="sidebar-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                        <i class="fas fa-home w-6 text-center sidebar-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="pt-4 pb-2 px-6">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Inventory</p>
+                </li>
+                <li>
+                    <a href="{{ url_for('medicines') }}" class="sidebar-item {% if request.endpoint == 'medicines' %}active{% endif %}">
+                        <i class="fas fa-capsules w-6 text-center sidebar-icon"></i>
+                        <span>Medicines</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('suppliers') }}" class="sidebar-item {% if request.endpoint == 'suppliers' %}active{% endif %}">
+                        <i class="fas fa-truck-medical w-6 text-center sidebar-icon"></i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('expiry_alerts') }}" class="sidebar-item {% if request.endpoint == 'expiry_alerts' %}active{% endif %}">
+                        <i class="fas fa-bell w-6 text-center sidebar-icon"></i>
+                        <span>Expiry & Alerts</span>
+                    </a>
+                </li>
+                
+                <li class="pt-4 pb-2 px-6">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sales & Billing</p>
+                </li>
+                <li>
+                    <a href="{{ url_for('billing') }}" class="sidebar-item {% if request.endpoint == 'billing' %}active{% endif %}">
+                        <i class="fas fa-file-invoice-dollar w-6 text-center sidebar-icon"></i>
+                        <span>New Bill</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('customers') }}" class="sidebar-item {% if request.endpoint == 'customers' %}active{% endif %}">
+                        <i class="fas fa-users w-6 text-center sidebar-icon"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('payments') }}" class="sidebar-item {% if request.endpoint == 'payments' %}active{% endif %}">
+                        <i class="fas fa-money-bill-wave w-6 text-center sidebar-icon"></i>
+                        <span>Payment History</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('reports') }}" class="sidebar-item {% if request.endpoint == 'reports' %}active{% endif %}">
+                        <i class="fas fa-chart-line w-6 text-center sidebar-icon"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="p-4 border-t border-slate-200">
+            <a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors font-medium">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <!-- Top Navbar -->
+        <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 z-40">
+            <div class="flex items-center gap-4">
+                <button id="mobile-menu-btn" class="lg:hidden text-slate-500 hover:text-slate-700">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="relative hidden sm:block">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" placeholder="Search medicines..." class="pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 bg-slate-50">
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-5">
+                <div class="relative">
+                    <button class="relative p-2 text-slate-500 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-bell text-lg"></i>
+                        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                </div>
+                <div class="h-8 w-px bg-slate-200"></div>
+                <div class="flex items-center gap-3 cursor-pointer">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                        A
+                    </div>
+                    <div class="hidden md:block text-sm">
+                        <p class="font-semibold text-slate-700">Admin User</p>
+                        <p class="text-xs text-slate-500">Administrator</p>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+            {% block page_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+<!-- Mobile Sidebar Overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-slate-800/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.getElementById('sidebar');
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        if (window.innerWidth < 1024) {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.add('fixed');
+            sidebar.classList.add('h-full');
+        }
+
+        if(mobileBtn) mobileBtn.addEventListener('click', toggleSidebar);
+        if(overlay) overlay.addEventListener('click', toggleSidebar);
+        
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.remove('fixed');
+                sidebar.classList.remove('h-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.add('fixed');
+                sidebar.classList.add('h-full');
+            }
+        });
+    });
+</script>
+{% endblock %}
