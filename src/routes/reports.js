@@ -3,29 +3,14 @@ import db from '../db.js';
 
 const router = Router();
 
-router.get('/reports', (req, res) => {
-  res.render('reports', { pageTitle: 'Analytics - PharmaLink' });
-});
-
-router.get('/expiry-alerts', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const [expired] = await db.query("SELECT * FROM Medicine WHERE expiry_date < CURDATE()");
-    const [expiring_soon] = await db.query(
-      "SELECT * FROM Medicine WHERE expiry_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)",
-    );
-    const [low_stock] = await db.query('SELECT * FROM Medicine WHERE stock_quantity <= 10');
-    res.render('expiry', { pageTitle: 'Expiry & Alerts - PharmaLink', expired, expiring_soon, low_stock });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
+    const simDate = req.query.simDate;
+    const today = simDate ? `DATE('${simDate}')` : 'CURDATE()';
 
-router.get('/api/sales-data', async (req, res) => {
-  try {
     const [sales] = await db.query(`
       SELECT DATE(bill_date) AS date, SUM(total_amount) AS total
-      FROM Bill WHERE DATE(bill_date) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+      FROM Bill WHERE DATE(bill_date) >= DATE_SUB(${today}, INTERVAL 7 DAY)
       GROUP BY DATE(bill_date) ORDER BY date
     `);
 
@@ -35,11 +20,20 @@ router.get('/api/sales-data', async (req, res) => {
       GROUP BY m.medicine_id ORDER BY total_sold DESC LIMIT 5
     `);
 
+    const [expired] = await db.query(`SELECT * FROM Medicine WHERE DATE(expiry_date) < ${today}`);
+    const [expiring_soon] = await db.query(
+      `SELECT * FROM Medicine WHERE DATE(expiry_date) BETWEEN ${today} AND DATE_ADD(${today}, INTERVAL 30 DAY)`
+    );
+    const [low_stock] = await db.query('SELECT * FROM Medicine WHERE stock_quantity <= 10');
+
     res.json({
       sales_dates: sales.map((s) => s.date),
       sales_totals: sales.map((s) => parseFloat(s.total)),
       med_names: topMeds.map((m) => m.medicine_name),
       med_sold: topMeds.map((m) => parseInt(m.total_sold)),
+      expired,
+      expiring_soon,
+      low_stock
     });
   } catch (err) {
     console.error(err);

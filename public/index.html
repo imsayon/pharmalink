@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PharmaLink - Premium Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Feather Icons for sleek SVG icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar glass">
+            <div class="sidebar-header">
+                <i data-feather="hexagon" class="logo-icon"></i>
+                <h2>PharmaLink</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item" onclick="loadPage('dashboard', this)">
+                    <i data-feather="grid"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="loadPage('medicines', this)">
+                    <i data-feather="package"></i> Medicines
+                </a>
+                <a href="#" class="nav-item" onclick="loadPage('suppliers', this)">
+                    <i data-feather="truck"></i> Suppliers
+                </a>
+                <a href="#" class="nav-item" onclick="loadPage('customers', this)">
+                    <i data-feather="users"></i> Customers
+                </a>
+                <a href="#" class="nav-item" onclick="loadPage('billing', this)">
+                    <i data-feather="file-text"></i> Billing
+                </a>
+                <li class="nav-item" onclick="loadPage('reports', this)">
+                    <i data-feather="bar-chart-2"></i> Analytics
+                </li>
+            </nav>
+
+            <div style="margin-top: auto;">
+                <ul class="nav-links">
+                    <li class="nav-item" onclick="loadPage('settings', this)">
+                        <i data-feather="settings"></i> Settings
+                    </li>
+                    <li class="nav-item" style="color: var(--danger);">
+                        <a href="/api/auth/logout" style="text-decoration: none; color: inherit; display:flex; align-items:center; gap:0.75rem;">
+                            <i data-feather="log-out"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="top-bar glass-card" style="border-radius: 0; padding: 1rem 2rem;">
+                <div class="search-bar">
+                    <i data-feather="search" style="color: var(--text-muted);"></i>
+                    <input type="text" id="global-search" placeholder="Search medicines, customers...">
+                </div>
+                <div class="user-profile" style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <span style="display: block; font-weight: 600;">Admin User</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Administrator</span>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i data-feather="user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Content -->
+            <div id="content" class="content-area">
+                <!-- Data will be loaded here -->
+            </div>
+        </main>
+    </div>
+    
+    <!-- Global Modals -->
+    <div id="medicineModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Add New Medicine</h2>
+            <form id="medicineForm">
+                <div class="form-group">
+                    <label>Medicine Name</label>
+                    <input type="text" name="medicine_name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Supplier</label>
+                    <select id="medicine-supplier-select" name="supplier_id" class="form-input" required>
+                        <option value="">-- Select Supplier --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" name="category" class="form-input" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Stock Quantity</label>
+                        <input type="number" name="stock_quantity" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" step="0.01" name="price" class="form-input" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Batch No</label>
+                        <input type="text" name="batch_no" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="date" name="expiry_date" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Manufacture Date</label>
+                    <input type="date" name="manufacture_date" class="form-input" required>
+                </div>
+                <div class="flex-row">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('medicineModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Medicine</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="customerModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Add New Customer</h2>
+            <form id="customerForm">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" name="customer_name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="age" class="form-input" required>
+                </div>
+                <div class="flex-row">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="supplierModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Add New Supplier</h2>
+            <form id="supplierForm">
+                <div class="form-group">
+                    <label>Supplier Name</label>
+                    <input type="text" name="supplier_name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" name="address" class="form-input" required>
+                </div>
+                <div class="flex-row">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('supplierModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Supplier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 650px;">
+            <h2 style="margin-bottom: 1.5rem;">Purchase History</h2>
+            <div id="history-content" style="max-height: 400px; overflow-y: auto;">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="flex-row">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('historyModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

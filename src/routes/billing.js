@@ -3,18 +3,18 @@ import db from '../db.js';
 
 const router = Router();
 
-router.get('/billing', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const [customers] = await db.query('SELECT * FROM Customer');
     const [medicines] = await db.query('SELECT * FROM Medicine WHERE stock_quantity > 0');
-    res.render('billing', { pageTitle: 'Billing - PharmaLink', customers, medicines });
+    res.json({ customers, medicines });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-router.post('/billing/create', async (req, res) => {
+router.post('/create', async (req, res) => {
   const conn = await db.getConnection();
   try {
     const { customer_id, items, total_amount, payment_method } = req.body;
@@ -55,7 +55,7 @@ router.post('/billing/create', async (req, res) => {
   }
 });
 
-router.get('/billing/invoice/:bill_id', async (req, res) => {
+router.get('/invoice/:bill_id', async (req, res) => {
   try {
     const [bills] = await db.query(
       `SELECT b.*, c.customer_name, c.phone
@@ -71,10 +71,10 @@ router.get('/billing/invoice/:bill_id', async (req, res) => {
       [req.params.bill_id],
     );
 
-    res.render('invoice', { pageTitle: `Invoice #${req.params.bill_id}`, bill: bills[0], details });
+    res.json({ bill: bills[0], details });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

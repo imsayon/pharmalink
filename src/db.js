@@ -9,4 +9,12 @@ const pool = mysql.createPool({
   dateStrings: true,
 });
 
+try {
+  const connection = await pool.getConnection();
+  console.log('✅ Database connected successfully');
+  connection.release();
+} catch (error) {
+  console.error('❌ Database connection failed:', error.message);
+}
+
 export default pool;
