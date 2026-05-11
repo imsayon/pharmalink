@@ -1,7 +1,3 @@
-/**
- * seed.js — Creates tables and inserts sample data.
- * Run once:  npm run seed
- */
 import 'dotenv/config';
 import db from './db.js';
 
