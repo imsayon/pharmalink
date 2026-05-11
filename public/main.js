@@ -271,9 +271,21 @@ function toggleTheme() {
 
 
 
+window.currentPage = '';
+
 async function loadPage(page, navElement = null) {
 	const content = document.getElementById("content")
     
+    // Clear search if changing pages
+    if (window.currentPage !== page) {
+        const searchInput = document.getElementById('global-search');
+        if (searchInput) {
+            searchInput.value = '';
+            // Don't dispatch event here, we are about to re-render anyway
+        }
+        window.currentPage = page;
+    }
+
     // Handle navigation active state
     if (navElement) {
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
