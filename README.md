@@ -14,7 +14,7 @@ Pharmacy Inventory & Expiry Prediction System built with **Express.js**, **Vanil
 # 1. Clone & install
 git clone https://github.com/your-username/pharmalink.git
 cd pharmalink
-npm install
+pnpm install # (You can also use npm install)
 
 # 2. Configure database
 cp .env.example .env
@@ -29,10 +29,10 @@ CREATE DATABASE pharmacy_db;
 exit
 
 # 4. Seed the database (creates tables + sample data)
-npm run seed
+pnpm run seed
 
 # 5. Run
-npm run dev
+pnpm run dev
 # → http://localhost:5000
 ```
 
@@ -55,6 +55,9 @@ Do NOT commit your `.env` file! A template `.env.example` is provided.
 │   ├── seed.js             # DB schema + sample data
 │   └── routes/             # API routes
 ├── public/                 # HTML, CSS, & JS assets
+│   ├── index.html
+│   ├── style.css
+│   └── main.js
 ├── database.sql            # Raw SQL schema (reference)
 ├── .env.example            # Environment template
 └── package.json
