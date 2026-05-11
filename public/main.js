@@ -691,4 +691,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof feather !== 'undefined') {
         feather.replace();
     }
+    
+    // Load dashboard by default if content is empty
+    setTimeout(() => {
+        const content = document.getElementById('content');
+        if (content && !content.innerHTML.trim()) {
+            const firstNav = document.querySelector('.nav-item');
+            if (firstNav) {
+                loadPage('dashboard', firstNav);
+            } else {
+                loadPage('dashboard');
+            }
+        }
+    }, 100);
 })
