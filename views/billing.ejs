@@ -1,0 +1,108 @@
+<%- include('partials/head') %>
+<%- include('partials/flash') %>
+<%- include('partials/sidebar') %>
+
+<div class="mb-6"><h1 class="text-2xl font-bold text-slate-800">Point of Sale (POS)</h1><p class="text-slate-500 text-sm mt-1">Create new bills and manage checkout.</p></div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="lg:col-span-2 space-y-6">
+    <div class="glass-card p-6">
+      <h2 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Select Medicine</h2>
+      <div class="flex gap-4">
+        <div class="flex-1 space-y-1">
+          <label class="text-sm font-medium text-slate-700">Search Medicine</label>
+          <select id="medSelect" class="w-full border-slate-300 rounded-lg px-3 py-2 border bg-white">
+            <option value="">-- Select a Medicine --</option>
+            <% medicines.forEach(med => { %>
+            <option value="<%= med.medicine_id %>" data-price="<%= med.price %>" data-stock="<%= med.stock_quantity %>" data-name="<%= med.medicine_name %>"><%= med.medicine_name %> (Stock: <%= med.stock_quantity %>) - ₹<%= parseFloat(med.price).toFixed(2) %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="w-24 space-y-1"><label class="text-sm font-medium text-slate-700">Qty</label><input type="number" id="medQty" value="1" min="1" class="w-full border-slate-300 rounded-lg px-3 py-2 border"></div>
+        <div class="flex items-end"><button id="addBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors h-10">Add to Bill</button></div>
+      </div>
+      <p id="medError" class="text-red-500 text-sm mt-2 hidden"></p>
+    </div>
+
+    <div class="glass-card overflow-hidden flex flex-col min-h-[400px]">
+      <div class="p-4 border-b border-slate-200 bg-slate-50"><h2 class="font-bold text-slate-700">Current Bill Items</h2></div>
+      <div class="overflow-x-auto flex-1 bg-white">
+        <table class="w-full text-left border-collapse" id="billTable">
+          <thead><tr class="border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider"><th class="p-3 font-semibold">Medicine</th><th class="p-3 font-semibold">Unit Price</th><th class="p-3 font-semibold">Qty</th><th class="p-3 font-semibold">Subtotal</th><th class="p-3 font-semibold text-right">Action</th></tr></thead>
+          <tbody class="divide-y divide-slate-100 text-sm" id="billBody"><tr id="emptyRow"><td colspan="5" class="p-8 text-center text-slate-400">No items added yet.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="glass-card p-6">
+      <h2 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Customer Details</h2>
+      <div class="space-y-4">
+        <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Select Customer *</label>
+          <select id="customerSelect" class="w-full border-slate-300 rounded-lg px-3 py-2 border bg-white"><option value="">-- Choose Customer --</option><% customers.forEach(c => { %><option value="<%= c.customer_id %>"><%= c.customer_name %> (<%= c.phone %>)</option><% }); %></select>
+        </div>
+        <div class="text-center text-sm text-slate-500">OR</div>
+        <button onclick="window.location.href='/customers'" class="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium transition-colors">Add New Customer</button>
+      </div>
+    </div>
+
+    <div class="glass-card p-6 bg-slate-800 text-white shadow-xl">
+      <h2 class="text-lg font-bold mb-4 border-b border-slate-600 pb-2">Order Summary</h2>
+      <div class="space-y-3 mb-6">
+        <div class="flex justify-between text-slate-300 text-sm"><span>Subtotal</span><span id="summarySubtotal">₹0.00</span></div>
+        <div class="flex justify-between text-slate-300 text-sm"><span>Tax (0%)</span><span>₹0.00</span></div>
+        <div class="border-t border-slate-600 pt-3 flex justify-between font-bold text-lg"><span>Total Amount</span><span id="summaryTotal" class="text-emerald-400">₹0.00</span></div>
+      </div>
+      <div class="space-y-3"><label class="text-sm text-slate-300">Payment Method</label>
+        <select id="paymentMethod" class="w-full bg-slate-700 border-slate-600 text-white rounded-lg px-3 py-2 border"><option value="Cash">Cash</option><option value="Card">Credit/Debit Card</option><option value="UPI">UPI/Online</option></select>
+      </div>
+      <button id="checkoutBtn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg font-bold text-lg mt-6 transition-colors shadow-lg shadow-emerald-500/30 flex justify-center items-center gap-2"><i class="fas fa-check-circle"></i> Complete Bill</button>
+      <p id="checkoutError" class="text-red-400 text-sm mt-3 text-center hidden"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let cart = [];
+    const medSelect = document.getElementById('medSelect'), medQty = document.getElementById('medQty');
+    const billBody = document.getElementById('billBody'), emptyRow = document.getElementById('emptyRow');
+    const summarySubtotal = document.getElementById('summarySubtotal'), summaryTotal = document.getElementById('summaryTotal');
+
+    function updateCartUI() {
+        billBody.innerHTML = ''; let total = 0;
+        if (!cart.length) { billBody.appendChild(emptyRow); summarySubtotal.innerText = '₹0.00'; summaryTotal.innerText = '₹0.00'; return; }
+        cart.forEach((item, i) => { total += item.subtotal; const tr = document.createElement('tr'); tr.className = 'hover:bg-slate-50'; tr.innerHTML = `<td class="p-3 font-bold text-slate-800">${item.name}</td><td class="p-3 text-slate-600">₹${item.price.toFixed(2)}</td><td class="p-3"><span class="font-medium bg-slate-100 px-2 py-1 rounded text-slate-700">${item.qty}</span></td><td class="p-3 font-bold text-slate-800">₹${item.subtotal.toFixed(2)}</td><td class="p-3 text-right"><button class="text-red-500 hover:text-red-700 p-1" onclick="removeItem(${i})"><i class="fas fa-trash"></i></button></td>`; billBody.appendChild(tr); });
+        summarySubtotal.innerText = `₹${total.toFixed(2)}`; summaryTotal.innerText = `₹${total.toFixed(2)}`;
+    }
+    window.removeItem = i => { cart.splice(i, 1); updateCartUI(); };
+
+    document.getElementById('addBtn').addEventListener('click', () => {
+        const errEl = document.getElementById('medError'); errEl.classList.add('hidden');
+        const opt = medSelect.options[medSelect.selectedIndex];
+        if (!opt.value) { errEl.innerText = 'Please select a medicine.'; errEl.classList.remove('hidden'); return; }
+        const id = opt.value, name = opt.dataset.name, price = parseFloat(opt.dataset.price), stock = parseInt(opt.dataset.stock), qty = parseInt(medQty.value);
+        if (qty <= 0) { errEl.innerText = 'Quantity must be at least 1.'; errEl.classList.remove('hidden'); return; }
+        const existing = cart.find(i => i.id === id); const curQty = existing ? existing.qty : 0;
+        if (curQty + qty > stock) { errEl.innerText = `Not enough stock! Available: ${stock}`; errEl.classList.remove('hidden'); return; }
+        if (existing) { existing.qty += qty; existing.subtotal = existing.qty * existing.price; } else { cart.push({ id, name, price, qty, subtotal: price * qty }); }
+        medQty.value = 1; updateCartUI();
+    });
+
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+        const custSelect = document.getElementById('customerSelect'), errEl = document.getElementById('checkoutError'), btn = document.getElementById('checkoutBtn');
+        errEl.classList.add('hidden');
+        if (!cart.length) { errEl.innerText = 'Bill is empty!'; errEl.classList.remove('hidden'); return; }
+        if (!custSelect.value) { errEl.innerText = 'Please select a customer!'; errEl.classList.remove('hidden'); return; }
+        const totalAmount = cart.reduce((s, i) => s + i.subtotal, 0);
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'; btn.disabled = true;
+        fetch('/billing/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer_id: parseInt(custSelect.value), total_amount: totalAmount, payment_method: document.getElementById('paymentMethod').value, items: cart.map(i => ({ medicine_id: parseInt(i.id), quantity: i.qty, subtotal: i.subtotal })) }) })
+        .then(r => r.json()).then(data => { if (data.success) { window.location.href = '/billing/invoice/' + data.bill_id; } else { errEl.innerText = 'Error: ' + data.error; errEl.classList.remove('hidden'); btn.innerHTML = '<i class="fas fa-check-circle"></i> Complete Bill'; btn.disabled = false; } })
+        .catch(() => { errEl.innerText = 'Network Error!'; errEl.classList.remove('hidden'); btn.innerHTML = '<i class="fas fa-check-circle"></i> Complete Bill'; btn.disabled = false; });
+    });
+});
+</script>
+
+<%- include('partials/sidebar_end') %>
+<%- include('partials/footer') %>

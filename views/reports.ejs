@@ -1,0 +1,32 @@
+<%- include('partials/head') %>
+<%- include('partials/flash') %>
+<%- include('partials/sidebar') %>
+
+<div class="mb-6"><h1 class="text-2xl font-bold text-slate-800">Analytics & Reports</h1><p class="text-slate-500 text-sm mt-1">Detailed insights into sales and inventory performance.</p></div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="glass-card p-6"><h2 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Sales Revenue Trend (Last 7 Days)</h2><div class="h-80 w-full relative"><canvas id="revenueChart"></canvas><div id="revenueLoading" class="absolute inset-0 flex items-center justify-center bg-white/80"><i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i></div></div></div>
+  <div class="glass-card p-6"><h2 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Top Selling Medicines</h2><div class="h-80 w-full relative"><canvas id="topMedicinesChart"></canvas><div id="topMedLoading" class="absolute inset-0 flex items-center justify-center bg-white/80"><i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i></div></div></div>
+</div>
+
+<div class="glass-card p-6 text-center">
+  <h2 class="text-lg font-bold text-slate-800 mb-2">Export Data</h2><p class="text-slate-500 text-sm mb-6">Download comprehensive reports for offline analysis.</p>
+  <div class="flex flex-wrap justify-center gap-4">
+    <button class="bg-blue-50 text-blue-700 border border-blue-200 px-6 py-2 rounded-lg font-medium hover:bg-blue-100 flex items-center gap-2"><i class="fas fa-file-excel"></i> Sales Report (Excel)</button>
+    <button class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-6 py-2 rounded-lg font-medium hover:bg-emerald-100 flex items-center gap-2"><i class="fas fa-file-csv"></i> Inventory Status (CSV)</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/sales-data').then(r => r.json()).then(data => {
+        document.getElementById('revenueLoading').style.display = 'none';
+        document.getElementById('topMedLoading').style.display = 'none';
+        new Chart(document.getElementById('revenueChart').getContext('2d'), { type:'bar', data:{ labels:data.sales_dates, datasets:[{ label:'Revenue (₹)', data:data.sales_totals, backgroundColor:'#2563eb', borderRadius:4 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true,grid:{color:'#f1f5f9'}}, x:{grid:{display:false}} } } });
+        new Chart(document.getElementById('topMedicinesChart').getContext('2d'), { type:'doughnut', data:{ labels:data.med_names, datasets:[{ data:data.med_sold, backgroundColor:['#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe'], borderWidth:0, hoverOffset:4 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right'}}, cutout:'65%' } });
+    }).catch(() => { document.getElementById('revenueLoading').innerHTML='<p class="text-red-500">Failed to load data.</p>'; document.getElementById('topMedLoading').innerHTML='<p class="text-red-500">Failed to load data.</p>'; });
+});
+</script>
+
+<%- include('partials/sidebar_end') %>
+<%- include('partials/footer') %>

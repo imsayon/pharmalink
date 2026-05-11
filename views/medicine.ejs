@@ -1,0 +1,76 @@
+<%- include('partials/head') %>
+<%- include('partials/flash') %>
+<%- include('partials/sidebar') %>
+
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div><h1 class="text-2xl font-bold text-slate-800">Inventory Management</h1><p class="text-slate-500 text-sm mt-1">Manage medicines, stock, and pricing.</p></div>
+    <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm shadow-blue-200 flex items-center gap-2"><i class="fas fa-plus"></i> Add Medicine</button>
+</div>
+
+<div class="glass-card p-4 mb-6 flex flex-wrap gap-4 items-center justify-between">
+    <div class="relative w-full md:w-96"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i><input type="text" id="searchInput" placeholder="Search by name, category or batch..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"></div>
+</div>
+
+<div class="glass-card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse" id="medicinesTable">
+      <thead><tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+        <th class="p-4 font-semibold">ID</th><th class="p-4 font-semibold">Medicine Name</th><th class="p-4 font-semibold">Category</th><th class="p-4 font-semibold">Batch No</th><th class="p-4 font-semibold">Stock</th><th class="p-4 font-semibold">Price</th><th class="p-4 font-semibold">Supplier</th><th class="p-4 font-semibold text-right">Actions</th>
+      </tr></thead>
+      <tbody class="divide-y divide-slate-100 text-sm">
+        <% if (medicines.length) { medicines.forEach(med => { %>
+        <tr class="hover:bg-slate-50/50 transition-colors">
+          <td class="p-4 text-slate-500">#<%= med.medicine_id %></td>
+          <td class="p-4 font-bold text-slate-800"><%= med.medicine_name %></td>
+          <td class="p-4"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-medium"><%= med.category %></span></td>
+          <td class="p-4 text-slate-500"><%= med.batch_no %></td>
+          <td class="p-4"><% if (med.stock_quantity===0) { %><span class="text-red-600 font-bold"><i class="fas fa-times-circle"></i> Out</span><% } else if (med.stock_quantity<=10) { %><span class="text-yellow-600 font-bold"><i class="fas fa-exclamation-triangle"></i> <%= med.stock_quantity %></span><% } else { %><span class="text-emerald-600 font-bold"><%= med.stock_quantity %></span><% } %></td>
+          <td class="p-4 font-medium text-slate-800">₹<%= parseFloat(med.price).toFixed(2) %></td>
+          <td class="p-4 text-slate-600"><%= med.supplier_name || 'Unknown' %></td>
+          <td class="p-4 text-right"><div class="flex justify-end gap-2"><form action="/medicines/delete/<%= med.medicine_id %>" method="POST" class="inline" onsubmit="return confirm('Delete this medicine?');"><button type="submit" class="w-8 h-8 rounded bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-colors flex items-center justify-center"><i class="fas fa-trash text-xs"></i></button></form></div></td>
+        </tr>
+        <% }); } else { %>
+        <tr><td colspan="8" class="p-8 text-center text-slate-500">No medicines found.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div id="addModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+      <h2 class="text-xl font-bold text-slate-800">Add New Medicine</h2>
+      <button onclick="document.getElementById('addModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="p-6 overflow-y-auto flex-1">
+      <form action="/medicines/add" method="POST" id="addForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Medicine Name *</label><input type="text" name="medicine_name" required class="w-full border-slate-300 rounded-lg px-3 py-2 border"></div>
+          <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Category *</label><input type="text" name="category" required class="w-full border-slate-300 rounded-lg px-3 py-2 border"></div>
+          <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Supplier *</label><select name="supplier_id" required class="w-full border-slate-300 rounded-lg px-3 py-2 border"><option value="">Select</option><% suppliers.forEach(s => { %><option value="<%= s.supplier_id %>"><%= s.supplier_name %></option><% }); %></select></div>
+          <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Batch No *</label><input type="text" name="batch_no" required class="w-full border-slate-300 rounded-lg px-3 py-2 border"></div>
+          <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Manufacture Date *</label><input type="date" name="manufacture_date" required class="w-full border-slate-300 rounded-lg px-3 py-2 border"></div>
+          <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Expiry Date *</label><input type="date" name="expiry_date" required class="w-full border-slate-300 rounded-lg px-3 py-2 border"></div>
+          <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Stock Qty *</label><input type="number" name="stock_quantity" min="0" required class="w-full border-slate-300 rounded-lg px-3 py-2 border"></div>
+          <div class="space-y-1"><label class="text-sm font-medium text-slate-700">Price (₹) *</label><input type="number" name="price" step="0.01" min="0.01" required class="w-full border-slate-300 rounded-lg px-3 py-2 border"></div>
+        </div>
+      </form>
+    </div>
+    <div class="p-6 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
+      <button onclick="document.getElementById('addModal').classList.add('hidden')" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 font-medium">Cancel</button>
+      <button type="submit" form="addForm" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Save Medicine</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    const f = this.value.toLowerCase();
+    document.querySelectorAll('#medicinesTable tbody tr').forEach(r => { r.style.display = r.innerText.toLowerCase().includes(f) ? '' : 'none'; });
+});
+</script>
+
+<%- include('partials/sidebar_end') %>
+<%- include('partials/footer') %>
