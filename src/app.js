@@ -17,7 +17,6 @@ import paymentRoutes from "./routes/payments.js"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const ROOT = path.resolve(__dirname, "..")
-
 const app = express()
 const PORT = process.env.PORT || 5000
 
@@ -38,7 +37,7 @@ app.use(
 )
 app.use(flash())
 
-// --- Locals middleware (available in every template) ---
+// --- middlewares ---
 app.use((req, res, next) => {
 	res.locals.messages = req.flash()
 	res.locals.currentPath = req.path
@@ -60,7 +59,7 @@ app.get("/", (req, res) => {
 	res.sendFile(path.join(ROOT, "public", "index.html"))
 })
 
-// --- Start ---
+// --- Start App ---
 app.listen(PORT, () => {
 	console.log(`PharmaLink running → http://localhost:${PORT}`)
 })
