@@ -71,7 +71,7 @@ export default function Billing() {
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <td style={{ ...tdStyle, fontWeight: 600 }}>{m.medicine_name}</td>
                     <td style={{ ...tdStyle, color: 'var(--text-muted)' }}>{m.stock_quantity}</td>
-                    <td style={tdStyle}>${m.price}</td>
+                    <td style={tdStyle}>₹{m.price}</td>
                     <td style={tdStyle}>
                       <motion.button whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
                         onClick={() => addToCart(m)}
@@ -113,7 +113,7 @@ export default function Billing() {
                       <motion.tr key={item.medicine_id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                         <td style={{ ...tdStyle, fontWeight: 500 }}>{item.medicine_name}</td>
                         <td style={tdStyle}>{item.quantity}</td>
-                        <td style={{ ...tdStyle, fontWeight: 600 }}>${item.subtotal.toFixed(2)}</td>
+                        <td style={{ ...tdStyle, fontWeight: 600 }}>₹{item.subtotal.toFixed(2)}</td>
                         <td style={tdStyle}>
                           <motion.button whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }} onClick={() => removeFromCart(item.medicine_id)}
                             style={{ border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer' }}><XCircle size={16} /></motion.button>
@@ -128,7 +128,7 @@ export default function Billing() {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem', padding: '0.5rem 0', borderTop: '1px solid var(--border-color)' }}>
             <span>Total:</span>
-            <motion.span key={total} initial={{ scale: 1.2 }} animate={{ scale: 1 }} style={{ color: 'var(--primary)' }}>${total.toFixed(2)}</motion.span>
+            <motion.span key={total} initial={{ scale: 1.2 }} animate={{ scale: 1 }} style={{ color: 'var(--primary)' }}>₹{total.toFixed(2)}</motion.span>
           </div>
 
           <Button onClick={processPayment} disabled={processing}

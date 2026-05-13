@@ -161,7 +161,7 @@ export default function SearchDropdown({ onNavigate }) {
                     {med.medicine_name}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    {med.category} · {med.stock_quantity} units · ${med.price}
+                    {med.category} · {med.stock_quantity} units · ₹{med.price}
                   </div>
                 </div>
                 <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} />

@@ -39,7 +39,7 @@ export default function Dashboard() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
         <StatsCard title="Total Medicines" value={data.totalMedicines} icon={Package} color="var(--primary)" delay={0} />
-        <StatsCard title="Total Sales" value={Number(data.totalSales)} icon={DollarSign} color="#10b981" delay={0.1} prefix="$" />
+        <StatsCard title="Total Sales" value={Number(data.totalSales)} icon={DollarSign} color="#10b981" delay={0.1} prefix="₹" />
         <StatsCard title="Low Stock Alerts" value={data.lowStockCount || 0} icon={AlertTriangle} color="#f59e0b" delay={0.2} />
         <StatsCard title="Expiring Soon" value={data.expiringCount || 0} icon={Clock} color="#ef4444" delay={0.3} />
       </div>
@@ -79,10 +79,10 @@ export default function Dashboard() {
                     {b.customer_name}
                   </td>
                   <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    {new Date(b.bill_date).toLocaleDateString()}
+                    {new Date(b.bill_date).toLocaleDateString('en-IN').replace(/\//g, '-')}
                   </td>
                   <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)', fontWeight: 700, color: 'var(--primary)', fontSize: '0.9rem' }}>
-                    ${b.total_amount}
+                    ₹{b.total_amount}
                   </td>
                   <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
                     <Badge variant="success">Paid</Badge>

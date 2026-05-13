@@ -116,8 +116,8 @@ export default function Customers() {
                 {historyModal.history.map(h => (
                   <tr key={h.bill_id}>
                     <td style={{ ...tdStyle, fontWeight: 600 }}>#{h.bill_id}</td>
-                    <td style={tdStyle}>{new Date(h.bill_date).toLocaleDateString()} {new Date(h.bill_date).toLocaleTimeString()}</td>
-                    <td style={{ ...tdStyle, fontWeight: 700, color: 'var(--primary)' }}>${h.total_amount}</td>
+                    <td style={tdStyle}>{new Date(h.bill_date).toLocaleDateString('en-IN').replace(/\//g, '-')} {new Date(h.bill_date).toLocaleTimeString()}</td>
+                    <td style={{ ...tdStyle, fontWeight: 700, color: 'var(--primary)' }}>₹{h.total_amount}</td>
                   </tr>
                 ))}
               </tbody>

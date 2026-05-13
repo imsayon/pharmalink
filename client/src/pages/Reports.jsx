@@ -26,9 +26,9 @@ export default function Reports() {
   const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
 
   const barData = {
-    labels: (data.sales_dates || []).map(d => new Date(d).toLocaleDateString()),
+    labels: (data.sales_dates || []).map(d => new Date(d).toLocaleDateString('en-IN').replace(/\//g, '-')),
     datasets: [{
-      label: 'Revenue ($)',
+      label: 'Revenue (₹)',
       data: data.sales_totals || [],
       backgroundColor: '#0d9488',
       borderRadius: 8,

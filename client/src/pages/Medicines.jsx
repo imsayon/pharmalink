@@ -110,11 +110,11 @@ export default function Medicines() {
                     <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)', fontWeight: 600, fontSize: '0.9rem' }}>{m.medicine_name}</td>
                     <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>{m.category}</td>
                     <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)', fontSize: '0.9rem' }}>{m.stock_quantity} units</td>
-                    <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)', fontWeight: 600, fontSize: '0.9rem' }}>${m.price}</td>
+                    <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)', fontWeight: 600, fontSize: '0.9rem' }}>₹{m.price}</td>
                     <td style={{
                       padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)', fontSize: '0.9rem',
                       color: isExpired ? '#ef4444' : 'var(--text-main)', fontWeight: isExpired ? 700 : 400,
-                    }}>{expiry.toLocaleDateString()}</td>
+                    }}>{expiry.toLocaleDateString('en-IN').replace(/\//g, '-')}</td>
                     <td style={{ padding: '0.85rem 1rem', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>{badge}</td>
                   </motion.tr>
                 );
