@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+    <linearGradient id="crossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <!-- Top-right leaf -->
+  <path d="M130 45 C145 25, 170 30, 160 55 C150 75, 130 70, 130 45Z" fill="url(#leafGrad)" opacity="0.9"/>
+  <!-- Bottom-left leaf -->
+  <path d="M70 155 C55 175, 30 170, 40 145 C50 125, 70 130, 70 155Z" fill="url(#leafGrad)" opacity="0.9"/>
+  <!-- Top-left leaf -->
+  <path d="M55 55 C35 40, 30 15, 55 25 C75 35, 70 55, 55 55Z" fill="url(#leafGrad)" opacity="0.7"/>
+  <!-- Bottom-right leaf -->
+  <path d="M145 145 C165 160, 170 185, 145 175 C125 165, 130 145, 145 145Z" fill="url(#leafGrad)" opacity="0.7"/>
+  <!-- Medical cross -->
+  <path d="M80 60 L120 60 C126 60 130 64 130 70 L130 80 L140 80 C146 80 150 84 150 90 L150 110 C150 116 146 120 140 120 L130 120 L130 130 C130 136 126 140 120 140 L80 140 C74 140 70 136 70 130 L70 120 L60 120 C54 120 50 116 50 110 L50 90 C50 84 54 80 60 80 L70 80 L70 70 C70 64 74 60 80 60Z" fill="url(#crossGrad)" stroke="white" stroke-width="3"/>
+  <!-- Inner cross cutout -->
+  <path d="M88 72 L112 72 C114 72 116 74 116 76 L116 88 L128 88 C130 88 132 90 132 92 L132 108 C132 110 130 112 128 112 L116 112 L116 124 C116 126 114 128 112 128 L88 128 C86 128 84 126 84 124 L84 112 L72 112 C70 112 68 110 68 108 L68 92 C68 90 70 88 72 88 L84 88 L84 76 C84 74 86 72 88 72Z" fill="white" fill-opacity="0.3"/>
+</svg>

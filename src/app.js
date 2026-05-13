@@ -54,10 +54,14 @@ app.use("/api/billing", billingRoutes)
 app.use("/api/reports", reportRoutes)
 app.use("/api/payments", paymentRoutes)
 
-// --- Serve index.html for root ---
-app.get("/", (req, res) => {
-	res.sendFile(path.join(ROOT, "public", "index.html"))
-})
+// --- SPA fallback: serve index.html for any non-API route ---
+app.use((req, res, next) => {
+	if (req.method === 'GET' && !req.path.startsWith('/api/')) {
+		res.sendFile(path.join(ROOT, "public", "index.html"));
+	} else {
+		next();
+	}
+});
 
 // --- Start App ---
 app.listen(PORT, () => {
